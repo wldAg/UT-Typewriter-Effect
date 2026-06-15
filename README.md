@@ -86,7 +86,7 @@
 2. 还需要Visual Studio(本人用的2026),.Net 10
 3. 用Visual Studio打开 基于UT文本引擎的字幕 by 无聊的Ag.slnx 文件，或直接双击 基于UT文本引擎的字幕 by 无聊的Ag.slnx 文件
 4. 你需要通过nuget包管理来安装Raylib-cs(或者已经安装了)
-5. 编译可以使用Visual Studio中的debug或Release编译，或者使用我提供的AOT编译中的AOT.bat编译(注意：AOT编译时间(20~30s)>>>Visual Studio的简单编译(0.8~1.5s))
+5. 编译可以使用Visual Studio中的debug或Release编译，或者使用我提供的AOT编译中的AOT.bat编译(注意：AOT编译时间(20\~30s)>>>Visual Studio的简单编译(0.8\~1.5s))
 
 ## 运行环境
 
