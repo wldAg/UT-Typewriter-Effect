@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!-- 1. 开启原生AOT（核心开关） -->
+    <PublishAot>true</PublishAot>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+
+    <!-- 2. 单文件、无依赖、裁剪全部 -->
+    <PublishSingleFile>true</PublishSingleFile>
+    <TrimMode>full</TrimMode>
+    <PublishTrimmed>true</PublishTrimmed>
+
+    <!-- 3. Raylib AOT 必须：禁用托管运行时、启用静态链接 -->
+    <IlcDisableReflection>true</IlcDisableReflection>
+    <IlcGenerateUnmanagedCode>true</IlcGenerateUnmanagedCode>
+
+    <!-- 4. 窗口透明/游戏常用配置 -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Raylib-cs" Version="8.0.0" />
+  </ItemGroup>
+
+</Project>
