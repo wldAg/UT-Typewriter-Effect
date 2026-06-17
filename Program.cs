@@ -106,26 +106,38 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                 string[] parts = data;
                 int timeDiff = i < rawLines.Count - 1 ? rawLines[i + 1].time - time : 0;
                 if (parts.Length == 1) txtdata.Add(new TextData { TimeOut = timeDiff, text = "" });
-                else if (parts.Length >= 7) {
-                    if (!int.TryParse(parts[1], out int X)) {
+                else if (parts.Length <= 8) {
+                    int X, Y, timeout = 3, size = 32;
+                    string font = "text";
+                    if (parts.Length < 4) {
+                        ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行参数过少,\n目标参数至少为4个", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, false);
+                        HasFile = false;
+                        return;
+                    }
+                    if (!int.TryParse(parts[1], out X)) {
                         ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行X坐标错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, false);
                         HasFile = false;
                         return;
                     }
-                    if (!int.TryParse(parts[2], out int Y)) {
+                    if (!int.TryParse(parts[2], out Y)) {
                         ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行Y坐标错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, false);
                         HasFile = false;
                         return;
                     }
-                    if (!int.TryParse(parts[4], out int timeout)) {
-                        ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行延迟错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, false);
-                        HasFile = false;
-                        return;
-                    }
-                    if (!int.TryParse(parts[6], out int size)) {
-                        ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行字体大小错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, false);
-                        HasFile = false;
-                        return;
+                    if (parts.Length >= 5) {
+                        if (!int.TryParse(parts[4], out timeout)) {
+                            ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行延迟错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, false);
+                            HasFile = false;
+                            return;
+                        }
+                        if (parts.Length >= 6) {
+                            font = parts[5];
+                            if (parts.Length == 7) if (!int.TryParse(parts[6], out size)) {
+                                ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行字体大小错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, false);
+                                HasFile = false;
+                                return;
+                            }
+                        }
                     }
 
                     txtdata.Add(new TextData {
@@ -133,7 +145,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                         point = new Vector2(X, Y),
                         text = parts[3],
                         sleep = timeout,
-                        font = parts[5],
+                        font = font,
                         fontsize = size
                     });
                 }
@@ -144,14 +156,13 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                     return;
                 }
             }
-
             NextLine = 0;
             TimeOut = 0;
         }
     }
     public static class TextBook {
         public static string ASCII = "";
-        public const string text = "没找到启动文件加载出错误第行格式需要个段字体大小延迟坐标时间可能是本中包含空请将空用代替件为空";
+        public const string text = "没找到启动文件加载出错误第行格式需要个段字体大小延迟坐标时间可能是本中包含空请将空用代替件为空参数过少目至";
         public static void Init() {
             StringBuilder s = new();
             for (char i = (char)0; i < 255; i++) {
