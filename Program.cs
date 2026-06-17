@@ -156,7 +156,6 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                     return;
                 }
             }
-
             NextLine = 0;
             TimeOut = 0;
         }
