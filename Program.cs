@@ -68,7 +68,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
         public static int Tick = 0;
         public static void LoadFile() {
             if (!File.Exists(FilePath)) {
-                ShowText.SetText(@$"\RFile Not Find!\n没找到\Y{FilePath}\R启动文件!", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, false);
+                ShowText.SetText(@$"\RFile Not Find!\n没找到\Y{FilePath}\R启动文件!", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, miaobian: false);
                 return;
             }
 
@@ -88,7 +88,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                 if (parts.Length == 0) continue;
 
                 if (!int.TryParse(parts[0], out int time)) {
-                    ShowText.SetText(@$"\R\3文件加载出错:第{lineNum}行时间格式错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, false);
+                    ShowText.SetText(@$"\R\3文件加载出错:第{lineNum}行时间格式错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, miaobian: false);
                     HasFile = false;
                     return;
                 }
@@ -97,7 +97,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             }
 
             if (rawLines.Count == 0) {
-                ShowText.SetText(@$"\RError:{FilePath}文件为空!", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, false);
+                ShowText.SetText(@$"\RError:{FilePath}文件为空!", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, miaobian: false);
                 HasFile = false;
                 return;
             }
@@ -106,34 +106,62 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                 string[] parts = data;
                 int timeDiff = i < rawLines.Count - 1 ? rawLines[i + 1].time - time : 0;
                 if (parts.Length == 1) txtdata.Add(new TextData { TimeOut = timeDiff, text = "" });
-                else if (parts.Length <= 8) {
-                    int X, Y, timeout = 3, size = 32;
+                else if (parts.Length <= 7) {
+                    int X = 0, Y = 0, timeout = 3, size = 32;
                     string font = "text";
-                    if (parts.Length < 4) {
-                        ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行参数过少,\n目标参数至少为4个", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, false);
+                    PointMode PMode = PointMode.None;
+                    if (parts.Length < 3) {
+                        ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行参数过少,\n目标参数至少为4个", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, miaobian: false);
                         HasFile = false;
                         return;
                     }
-                    if (!int.TryParse(parts[1], out X)) {
-                        ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行X坐标错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, false);
-                        HasFile = false;
-                        return;
+
+                    string[] SPoint = parts[1].Split(',');
+                    switch (SPoint[0].ToLower()) {
+                        case "sc":
+                        case "setcenter":
+                            PMode = PointMode.SetCenter;
+                            break;
+                        case "ac":
+                        case "alwayscenter":
+                            PMode = PointMode.AlwaysCenter;
+                            break;
+                        default:
+                            if (!int.TryParse(SPoint[0], out X)) {
+                                ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行X坐标错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, miaobian: false);
+                                HasFile = false;
+                                return;
+                            }
+                            break;
                     }
-                    if (!int.TryParse(parts[2], out Y)) {
-                        ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行Y坐标错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, false);
-                        HasFile = false;
-                        return;
+                    switch (SPoint[1].ToLower()) {
+                        case "sc":
+                        case "setcenter":
+                            PMode = PointMode.SetCenter;
+                            break;
+                        case "ac":
+                        case "alwayscenter":
+                            PMode = PointMode.AlwaysCenter;
+                            break;
+                        default:
+                            if (!int.TryParse(SPoint[1], out Y)) {
+                                ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行Y坐标错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, miaobian: false);
+                                HasFile = false;
+                                return;
+                            }
+                            break;
                     }
-                    if (parts.Length >= 5) {
-                        if (!int.TryParse(parts[4], out timeout)) {
-                            ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行延迟错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, false);
+
+                    if (parts.Length >= 4) {
+                        if (!int.TryParse(parts[3], out timeout)) {
+                            ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行延迟错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, miaobian: false);
                             HasFile = false;
                             return;
                         }
-                        if (parts.Length >= 6) {
-                            font = parts[5];
-                            if (parts.Length == 7) if (!int.TryParse(parts[6], out size)) {
-                                ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行字体大小错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, false);
+                        if (parts.Length >= 5) {
+                            font = parts[4];
+                            if (parts.Length == 6) if (!int.TryParse(parts[5], out size)) {
+                                ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行字体大小错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, miaobian: false);
                                 HasFile = false;
                                 return;
                             }
@@ -143,7 +171,8 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                     txtdata.Add(new TextData {
                         TimeOut = timeDiff,
                         point = new Vector2(X, Y),
-                        text = parts[3],
+                        pMode = PMode,
+                        text = parts[2],
                         sleep = timeout,
                         font = font,
                         fontsize = size
@@ -151,7 +180,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                 }
                 else {
                     ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行格式错误\n(可能是文本中包含空格,请将空格用\b代替)",
-                        MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, false);
+                        MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, miaobian: false);
                     HasFile = false;
                     return;
                 }
@@ -182,9 +211,15 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
     public struct TextData {
         public int TimeOut;
         public Vector2 point;
+        public PointMode pMode;
         public string text;
         public int sleep;
         public string font;
         public int fontsize;
+    }
+    public enum PointMode {
+        None,
+        SetCenter,
+        AlwaysCenter
     }
 }
