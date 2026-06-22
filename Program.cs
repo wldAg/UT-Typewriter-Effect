@@ -28,14 +28,8 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                     if (Data.TimeOut <= 0 && Data.NextLine < Data.txtdata.Count) {
                         TextData td = Data.txtdata[Data.NextLine];
                         Data.TimeOut = td.TimeOut;
-
-                        if (string.IsNullOrEmpty(td.text)) {
-                            ShowText.EndText();
-                        }
-                        else {
-                            ShowText.SetText(td.text, MyFont.LoadChinaFont(td.font, td.text),
-                                td.point, td.sleep, td.fontsize);
-                        }
+                        if (string.IsNullOrEmpty(td.text)) ShowText.EndText();
+                        else ShowText.SetText(td.text, MyFont.LoadChinaFont(td.font, td.text), td.point, td.sleep, td.fontsize);
                         Data.NextLine++;
                     }
                     else if (Data.NextLine == Data.txtdata.Count) break;
@@ -71,28 +65,22 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                 ShowText.SetText(@$"\RFile Not Find!\n没找到\Y{FilePath}\R启动文件!", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, false);
                 return;
             }
-
             HasFile = true;
             txtdata.Clear();
-
             using StreamReader TextFile = new(FilePath, Encoding.UTF8);
             List<(int time, string[] data)> rawLines = [];
             int lineNum = 0;
-
             while ((Text = TextFile.ReadLine()) != null) {
                 lineNum++;
                 Text = Text.Trim();
                 if (string.IsNullOrEmpty(Text)) continue;
-
                 string[] parts = Text.Split(' ');
                 if (parts.Length == 0) continue;
-
                 if (!int.TryParse(parts[0], out int time)) {
                     ShowText.SetText(@$"\R\3文件加载出错:第{lineNum}行时间格式错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, false);
                     HasFile = false;
                     return;
                 }
-
                 rawLines.Add((time, parts));
             }
 
@@ -165,9 +153,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
         public const string text = "没找到启动文件加载出错误第行格式需要个段字体大小延迟坐标时间可能是本中包含空请将空用代替件为空参数过少目至";
         public static void Init() {
             StringBuilder s = new();
-            for (char i = (char)0; i < 255; i++) {
-                s.Append(i);
-            }
+            for (char i = (char)0; i < 255; i++) s.Append(i);
             ASCII = s.ToString();
         }
     }
