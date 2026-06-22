@@ -22,7 +22,6 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
         private static bool MiaoBian;
         private static Color color = Color.White;
         private static Font font;
-        private static PointMode Mode;
 
         public static void Tick() {
             if (Lenth == 0) return;
@@ -85,7 +84,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
         /// R:红 W:白 Y:黄 B:蓝 P:紫 C:青 G:绿<br/>
         /// t:休眠刻 T:设置全局休眠刻 x:x = 0 y:\r n:\n r:重置特效
         /// </summary>
-        public static void SetText(string text, Font f, Vector2 p, int timeout, int Fsize, PointMode mod = PointMode.None, bool miaobian = true) {
+        public static void SetText(string text, Font f, Vector2 p, int timeout, int Fsize, bool miaobian = true) {
             Shake = false;
             ChangeColor = false;
             SmallShake = false;
@@ -99,7 +98,6 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             Text_Con = 0;
             NextCharTick = 0;
             color = Color.White;
-            Mode = mod;
             MiaoBian = miaobian;
             Vector2 point = p;
             for (int i = 0; i < Lenth; i++) {
@@ -110,7 +108,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                             chr = "\\";
                             TextList.Add(new CharTxt() {
                                 txt = chr,
-                                point = new Vector2(point.X, point.Y) + new Vector2(size / 2),
+                                point = point + new Vector2(size / 2),
                                 Base_point = point,
                                 color = color,
                                 sleep = sleep,
@@ -129,7 +127,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                             chr = " ";
                             TextList.Add(new CharTxt() {
                                 txt = chr,
-                                point = new Vector2(point.X, point.Y) + new Vector2(size / 2),
+                                point = point + new Vector2(size / 2),
                                 Base_point = point,
                                 sleep = sleep
                             });
@@ -209,7 +207,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                 else {
                     TextList.Add(new CharTxt() {
                         txt = chr,
-                        point = new Vector2(point.X, point.Y) + new Vector2(size / 2),
+                        point = point + new Vector2(size / 2),
                         Base_point = point,
                         color = color,
                         sleep = TimeOut == 0 ? sleep : TimeOut,

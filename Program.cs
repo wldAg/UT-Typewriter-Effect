@@ -29,13 +29,8 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                         TextData td = Data.txtdata[Data.NextLine];
                         Data.TimeOut = td.TimeOut;
 
-                        if (string.IsNullOrEmpty(td.text)) {
-                            ShowText.EndText();
-                        }
-                        else {
-                            ShowText.SetText(td.text, MyFont.LoadChinaFont(td.font, td.text),
-                                td.point, td.sleep, td.fontsize);
-                        }
+                        if (string.IsNullOrEmpty(td.text)) ShowText.EndText();
+                        else ShowText.SetText(td.text, MyFont.LoadChinaFont(td.font, td.text), td.point, td.sleep, td.fontsize);
                         Data.NextLine++;
                     }
                     else if (Data.NextLine == Data.txtdata.Count) break;
@@ -114,9 +109,8 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                 int timeDiff = i < rawLines.Count - 1 ? rawLines[i + 1].time - time : 0;
                 if (parts.Length == 1) txtdata.Add(new TextData { TimeOut = timeDiff, text = "" });
                 else if (parts.Length <= 7) {
-                    int X = 0, Y = 0, timeout = 3, size = 32;
+                    int timeout = 3, size = 32;
                     string font = "text";
-                    PointMode PMode = PointMode.None;
                     if (parts.Length < 3) {
                         ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行参数过少,\n目标参数至少为4个", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, miaobian: false);
                         HasFile = false;
@@ -124,32 +118,18 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                     }
 
                     string[] SPoint = parts[1].Split(',');
-                    switch (SPoint[0].ToLower()) {
-                        case "ac":
-                        case "alwayscenter":
-                            PMode = PointMode.AlwaysCenter;
-                            break;
-                        default:
-                            if (!int.TryParse(SPoint[0], out X)) {
-                                ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行X坐标错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, miaobian: false);
-                                HasFile = false;
-                                return;
-                            }
-                            break;
+                    if (!float.TryParse(SPoint[0], out float X)) {
+                        ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行X坐标错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, miaobian: false);
+                        HasFile = false;
+                        return;
                     }
-                    switch (SPoint[1].ToLower()) {
-                        case "ac":
-                        case "alwayscenter":
-                            PMode = PointMode.AlwaysCenter;
-                            break;
-                        default:
-                            if (!int.TryParse(SPoint[1], out Y)) {
-                                ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行Y坐标错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, miaobian: false);
-                                HasFile = false;
-                                return;
-                            }
-                            break;
+                    if (!float.TryParse(SPoint[1], out float Y)) {
+                        ShowText.SetText(@$"\R\3文件加载出错:第{i + 1}行Y坐标错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, miaobian: false);
+                        HasFile = false;
+                        return;
                     }
+                    if (X > 0 && X < 1) X = Width * X;
+                    if (Y > 0 && Y < 1) Y = Height * Y;
 
                     if (parts.Length >= 4) {
                         if (!int.TryParse(parts[3], out timeout)) {
@@ -170,7 +150,6 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                     txtdata.Add(new TextData {
                         TimeOut = timeDiff,
                         point = new Vector2(X, Y),
-                        pMode = PMode,
                         text = parts[2],
                         sleep = timeout,
                         font = font,
@@ -210,14 +189,9 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
     public struct TextData {
         public int TimeOut;
         public Vector2 point;
-        public PointMode pMode;
         public string text;
         public int sleep;
         public string font;
         public int fontsize;
-    }
-    public enum PointMode {
-        None,
-        AlwaysCenter
     }
 }
