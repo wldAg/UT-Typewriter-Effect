@@ -19,10 +19,10 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             SetCursorPos(mouse.X, mouse.Y);
             Data.Width = Raylib.GetMonitorWidth(Raylib.GetCurrentMonitor());
             Data.Height = Raylib.GetMonitorHeight(Raylib.GetCurrentMonitor());
-            RenderTexture2D window = Raylib.LoadRenderTexture(1920, 1080);
             Raylib.SetTargetFPS(60);
             TextBook.Init();
             Data.LoadFile();
+            Data.WinSize = Data.FHeight / (float)Data.Height;
             while ((GetAsyncKeyState(27) & 0x8000) == 0 || (GetAsyncKeyState(114) & 0x8000) == 0) {
                 if (Data.HasFile) {
                     if (Data.TimeOut <= 0 && Data.NextLine < Data.txtdata.Count) {
@@ -45,12 +45,8 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                 Data.Tick++;
 
                 Raylib.BeginDrawing();
-                Raylib.BeginTextureMode(window);
                 Raylib.ClearBackground(Color.Blank);
                 ShowText.Draw();
-                Raylib.EndTextureMode();
-                Raylib.ClearBackground(Color.Blank);
-                Raylib.DrawTexturePro(window.Texture, new(0, 0, 1920, -1080), new(0, 0, Data.Width, Data.Height), new(0), 0, Color.White);
                 Raylib.EndDrawing();
             }
             Raylib.CloseWindow();
@@ -65,6 +61,8 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
         public static string Text = "";
         public static int Width;
         public static int Height;
+        public static int FHeight = 1080;
+        public static float WinSize;
         public static int Tick = 0;
         public static void LoadFile() {
             if (!File.Exists(FilePath)) {
@@ -87,7 +85,16 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                 string[] parts = Text.Split(' ');
                 if (parts.Length == 0) continue;
 
-                if (!int.TryParse(parts[0], out int time)) {
+                int time = 0;
+                if (parts[0] == "size") {
+                    if (!int.TryParse(parts[2], out FHeight)) {
+                        ShowText.SetText(@$"\R\3文件加载出错:第{lineNum}行原始窗口大小设置错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, miaobian: false);
+                        HasFile = false;
+                        return;
+                    }
+                    continue;
+                }
+                else if (!int.TryParse(parts[0], out time)) {
                     ShowText.SetText(@$"\R\3文件加载出错:第{lineNum}行时间格式错误", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, miaobian: false);
                     HasFile = false;
                     return;
@@ -118,10 +125,6 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
 
                     string[] SPoint = parts[1].Split(',');
                     switch (SPoint[0].ToLower()) {
-                        case "sc":
-                        case "setcenter":
-                            PMode = PointMode.SetCenter;
-                            break;
                         case "ac":
                         case "alwayscenter":
                             PMode = PointMode.AlwaysCenter;
@@ -135,10 +138,6 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                             break;
                     }
                     switch (SPoint[1].ToLower()) {
-                        case "sc":
-                        case "setcenter":
-                            PMode = PointMode.SetCenter;
-                            break;
                         case "ac":
                         case "alwayscenter":
                             PMode = PointMode.AlwaysCenter;
@@ -191,7 +190,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
     }
     public static class TextBook {
         public static string ASCII = "";
-        public const string text = "没找到启动文件加载出错误第行格式需要个段字体大小延迟坐标时间可能是本中包含空请将空用代替件为空参数过少目至";
+        public const string text = "没找到启动文件加载出错误第行格式需要个段字体大小延迟坐原始窗口设置标时间可能是本中包含空请将空用代替件为空参数过少目至";
         public static void Init() {
             StringBuilder s = new();
             for (char i = (char)0; i < 255; i++) {
@@ -219,7 +218,6 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
     }
     public enum PointMode {
         None,
-        SetCenter,
         AlwaysCenter
     }
 }

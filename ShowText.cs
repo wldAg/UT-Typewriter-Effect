@@ -75,8 +75,8 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             if (Lenth == 0) return;
             for (int i = 0; i < Text_Con; i++) {
                 CharTxt c = TextList[i];
-                if (MiaoBian) Raylib.DrawTextPro(font, c.txt, c.point, new Vector2(size / 2 - 2), c.r, size + 4, 0, Color.Black);
-                Raylib.DrawTextPro(font, c.txt, c.point, new Vector2(size / 2), c.r, size, 0, c.color);
+                if (MiaoBian) Raylib.DrawTextPro(font, c.txt, c.point * Data.WinSize, new Vector2(size * Data.WinSize / 2 - 2), c.r, (size + 4) * Data.WinSize, 0, Color.Black);
+                Raylib.DrawTextPro(font, c.txt, c.point * Data.WinSize, new Vector2(size * Data.WinSize / 2), c.r, size * Data.WinSize, 0, c.color);
             }
         }
         /// <summary>
@@ -85,8 +85,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
         /// R:红 W:白 Y:黄 B:蓝 P:紫 C:青 G:绿<br/>
         /// t:休眠刻 T:设置全局休眠刻 x:x = 0 y:\r n:\n r:重置特效
         /// </summary>
-        public static void SetText(string text, Font f, Vector2 p, int timeout, int Fsize,
-            PointMode mod = PointMode.None, bool miaobian = true) {
+        public static void SetText(string text, Font f, Vector2 p, int timeout, int Fsize, PointMode mod = PointMode.None, bool miaobian = true) {
             Shake = false;
             ChangeColor = false;
             SmallShake = false;

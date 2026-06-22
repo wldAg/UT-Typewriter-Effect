@@ -10,6 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="AOT原生编译%28放弃.net运行时%29\**" />
+    <EmbeddedResource Remove="AOT原生编译%28放弃.net运行时%29\**" />
+    <None Remove="AOT原生编译%28放弃.net运行时%29\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Raylib-cs" Version="8.0.0" />
   </ItemGroup>
 
