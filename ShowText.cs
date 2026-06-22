@@ -60,7 +60,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                 TextList[i] = c;
             }
             ChangeColor_con++;
-            if (ran.Next(Lenth / 2) == 0) {
+            if (ran.Next((Lenth / 4) + 1) == 0) {
                 int con = ran.Next(Text_Con);
                 CharTxt c = TextList[con];
                 if (c.SmallShake) {
