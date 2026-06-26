@@ -427,3 +427,4 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+/AOT原生编译(放弃.net运行时)
