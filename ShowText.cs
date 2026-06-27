@@ -63,7 +63,6 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                         }
                         TextList[i] = c;
                     }
-                    ChangeColor_con++;
                     if (Data.rad.Next(Lenth / 4 + 1) == 0) {
                         int con = Data.rad.Next(Text_Con);
                         CharTxt c = TextList[con];
@@ -81,11 +80,13 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                         c.point -= c.speed;
                         c.speed.Y -= 0.2f;
                         c.r += c.r_speed;
+                        if (c.ChangeColor) c.color = Color.FromHSV((ChangeColor_con - i * 4) % 360, 1, 1);
                         if (c.point.Y >= Data.Height + Math.Sqrt(size * size * 2)) TextOutList.RemoveAt(i);
                         else TextOutList[i] = c;
                     }
                     break;
             }
+            ChangeColor_con++;
         }
         public static void Draw() {
             if (Lenth == 0) return;
@@ -106,7 +107,6 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                     }
                     break;
             }
-            Raylib.DrawText($"{TextList.Count} {TextOutList.Count}", 0, 0, 32, Color.White);
         }
         /// <summary>
         /// 设置文本<br/>
@@ -265,10 +265,10 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                             txt = c.txt,
                             color = c.color,
                             point = c.point,
+                            ChangeColor = c.ChangeColor,
                             speed = new(Data.rad.Next(-10, 10), Data.rad.Next(4)),
                             r_speed = Data.rad.Next(-20, 20),
-                            r = 0,
-                            a = 0
+                            r = 0
                         });
                     }
                     break;
@@ -297,11 +297,11 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
         public struct CharTxt_Out {
             public string txt;
             public Color color;
+            public bool ChangeColor;
             public Vector2 point;
             public Vector2 speed;
             public int r_speed;
             public int r;
-            public int a;
         }
     }
 }

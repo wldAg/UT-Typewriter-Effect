@@ -1,8 +1,7 @@
 ﻿using Raylib_cs;
-using System.Data;
+using System.Text;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace 基于UT文本引擎的字幕_by_无聊的Ag {
     internal class Program {
@@ -11,7 +10,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
         [StructLayout(LayoutKind.Sequential)] public struct POINT { public int X; public int Y; }
         [DllImport("user32.dll")] static extern bool SetCursorPos(int x, int y);
         static void Main(string[] arge) {
-            if (arge.Length == 1) Data.FilePath = arge[0] + ".txt";
+            if (arge.Length == 1) Data.FilePath = arge[0];
             else if (arge.Length > 1) return;
             GetCursorPos(out POINT mouse);
             Raylib.SetConfigFlags(ConfigFlags.UndecoratedWindow | ConfigFlags.TransparentWindow | ConfigFlags.TopmostWindow | ConfigFlags.MousePassthroughWindow);
@@ -20,7 +19,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             Data.Width = Raylib.GetMonitorWidth(Raylib.GetCurrentMonitor());
             Data.Height = Raylib.GetMonitorHeight(Raylib.GetCurrentMonitor());
             Raylib.SetTargetFPS(60);
-            TextBook.Init();
+            MyFont.Init();
             Data.LoadFile();
             Data.WinSize = Data.FHeight / (float)Data.Height;
             while ((GetAsyncKeyState(27) & 0x8000) == 0 || (GetAsyncKeyState(114) & 0x8000) == 0) {
@@ -32,7 +31,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                         Data.TimeOut = td.TimeOut;
 
                         if (string.IsNullOrEmpty(td.text)) ShowText.EndText(td.outmod);
-                        else ShowText.SetText(td.text, MyFont.LoadChinaFont(td.font, td.text), td.point, td.sleep, td.fontsize);
+                        else ShowText.SetText(td.text, MyFont.Get(td.font), td.point, td.sleep, td.fontsize);
                         Data.NextLine++;
                     }
                     else Data.TimeOut--;
@@ -124,6 +123,11 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                     HasFile = false;
                     return;
                 }
+                if (timemod == TimeMode.TimeLine) if (time <= 0) {
+                    ShowText.SetText(@$"\R\3时间数据出错:第{lineNum}行时间线模式下Tick不能为0", MyFont.text, new(Width * 0.38f, Height * 0.85f), 2, 40, miaobian: false);
+                    HasFile = false;
+                    return;
+                }
                 rawLines.Add((time, parts));
             }
             if (rawLines.Count == 0) {
@@ -198,27 +202,59 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                     return;
                 }
             }
+            foreach (TextData t in txtdata) MyFont.Add(t.font, t.text, t.fontsize);
+            MyFont.Set();
             NextLine = 0;
             TimeOut = 0;
         }
     }
-    public static class TextBook {
-        public static string ASCII = "";
-        public const string text = "没找到启动文件加载出错误第行必须在一格模式需要个段字体大小延迟坐原始窗口设置标时间可能是本中包含空请将空用代替件为空参数过少目至";
-        public static void Init() {
-            StringBuilder s = new();
-            for (char i = (char)0; i < 255; i++) {
-                s.Append(i);
-            }
-            ASCII = s.ToString();
-        }
-    }
     public static class MyFont {
+        public static List<SFont> Fonts = [];
+        public static int[] ASCII = new int[95];
+        public const string txt = "没找到启动文件加载出错误第行必须在一格模式需要个段字线下不据体大小延迟坐原始窗口设置标时间可能是本中包含空请将空用代替件为空参数过少目至";
         public const string Path = "Font\\";
-        public static Font text = LoadChinaFont("text", TextBook.text);
+        public static Font text = LoadChinaFont("text", txt);
+        public static void Init() {
+            for (char i = (char)0; i < 95; i++) {
+                ASCII[i] = i + 32;
+            }
+        }
         public static Font LoadChinaFont(string font, string textfile, int size = 32) {
-            int[] codepoints = [.. (TextBook.ASCII + textfile).Distinct().Select(c => (int)c)];
-            return Raylib.LoadFontEx($"{Path}{font}.ttf", size, codepoints, codepoints.Length); ;
+            int[] chr_zn = [..textfile.Distinct().Select(c => (int)c)];
+            int[] chr = new int[95 + chr_zn.Length];
+            Array.Copy(ASCII, 0, chr, 0, 95);
+            Array.Copy(chr_zn, 0, chr, 95, chr_zn.Length);
+            return Raylib.LoadFontEx($"{Path}{font}.ttf", size, chr, chr.Length); ;
+        }
+        public static void Add(string f, string t, int s) {
+            for (int i = 0; i < Fonts.Count; i++) {
+                SFont sf = Fonts[i];
+                if (sf.name == f) {
+                    sf.txt.Append(t);
+                    sf.size = sf.size < s ? s : sf.size;
+                    Fonts[i] = sf;
+                    return;
+                }
+            }
+            Fonts.Add(new SFont() {
+                name = f,
+                txt = new(t),
+                size = s
+            });
+        }
+        public static void Set() {
+            for (int i=0;i<Fonts.Count;i++) {
+                SFont f = Fonts[i];
+                f.font = LoadChinaFont(f.name, f.txt.ToString(), f.size);
+                f.txt.Clear();
+                Fonts[i] = f;
+            }
+        }
+        public static Font Get(string n) {
+            foreach (SFont f in Fonts) {
+                if (f.name == n) return f.font;
+            }
+            return text;
         }
     }
     public struct TextData {
@@ -229,6 +265,12 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
         public int sleep;
         public string font;
         public int fontsize;
+    }
+    public struct SFont {
+        public string name;
+        public StringBuilder txt;
+        public int size;
+        public Font font;
     }
     public enum TimeMode {
         TimeLine,
