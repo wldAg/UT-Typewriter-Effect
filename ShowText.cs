@@ -22,7 +22,12 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
         private static Color color = Color.White;
         private static Font font;
         private static OutMode mod;
-        private static bool MiaoBian;
+        private static bool Bg;
+        private static Vector2 BgPoint;
+        private static Color BgColor;
+        private static int Width;
+        private static int Height;
+        private static float width;
 
         public static void Tick() {
             if (Lenth == 0) return;
@@ -92,9 +97,9 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             if (Lenth == 0) return;
             switch (mod) {
                 case OutMode.Normal:
+                    if (Bg) Raylib.DrawRectangle((int)BgPoint.X, (int)BgPoint.Y, Width, Height, BgColor);
                     for (int i = 0; i < Text_Con; i++) {
                         CharTxt c = TextList[i];
-                        if (MiaoBian) Raylib.DrawTextPro(font, c.txt, new(c.point.X - 2, c.point.Y - 2), new Vector2(size / 2 + 2), c.r, size, 0, Color.Black);
                         Raylib.DrawTextPro(font, c.txt, c.point, new Vector2(size / 2), c.r, size, 0, c.color);
                     }
                     break;
@@ -102,35 +107,42 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                     if (TextOutList.Count == 0) return;
                     for (int i = 0; i < TextOutList.Count; i++) {
                         CharTxt_Out c = TextOutList[i];
-                        if (MiaoBian) Raylib.DrawTextPro(font, c.txt, new(c.point.X - 2, c.point.Y - 2), new Vector2(size / 2 + 2), c.r, size, 0, Color.Black);
                         Raylib.DrawTextPro(font, c.txt, c.point, new Vector2(size / 2), c.r, size, 0, c.color);
                     }
                     break;
             }
         }
         /// <summary>
-        /// 设置文本<br/>
+        /// 设置文本(\)<br/>
         /// 1:震动 2:渐变色 3:微震 4:转圈 5:上下震动<br/>
-        /// R:红 W:白 Y:黄 B:蓝 P:紫 C:青 G:绿<br/>
-        /// t:休眠刻 T:修改休眠刻 x:x = 0 y:\r n:\n r:重置特效
+        /// R:红 W:白 Y:黄 B:蓝 P:紫 C:青 G:绿 O:橙 D:黑<br/>
+        /// t:休眠刻 T:修改休眠刻 x:x = 0 y:\r n:\n r:重置特效<br/>
+        /// (/)
+        /// B:背景 B+颜色字符可以改底色,如:/By :淡黄色背景
+        /// R:红 W:白 Y:黄 B:蓝 P:紫 C:青 G:绿 O:橙 D:黑
+        /// 小写为半透明
         /// </summary>
-        public static void SetText(string text, Font f, Vector2 p, int timeout, int s, bool miaobian = true) {
+        public static void SetText(string text, Font f, Vector2 p, int s) {
             Shake = false;
             ChangeColor = false;
             SmallShake = false;
             LRShake = false;
             UpDown = false;
             Lenth = text.Length;
-            sleep = timeout;
+            sleep = -1;
             font = f;
             size = s;
             TextList.Clear();
             Text_Con = 0;
             NextCharTick = 0;
             color = Color.White;
-            MiaoBian = miaobian;
             Vector2 point = p;
             mod = OutMode.Normal;
+            Bg = false;
+            Width = 0;
+            Height = s;
+            BgPoint = p - new Vector2(6, 8);
+            BgColor = new(0, 0, 0, 192);
             for (int i = 0; i < Lenth; i++) {
                 string chr = new(text[i], 1);
                 if (chr == "\\") {
@@ -153,10 +165,11 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                                 r = 0
                             });
                             point.X += Raylib.MeasureTextEx(font, chr, size, 0).X;
+                            width += Raylib.MeasureTextEx(font, chr, size, 0).X;
                             break;
                         case 'b':
-                            chr = " ";
-                            point.X += Raylib.MeasureTextEx(font, chr, size, 0).X;
+                            point.X += Raylib.MeasureTextEx(font, " ", size, 0).X;
+                            width += Raylib.MeasureTextEx(font, " ", size, 0).X;
                             break;
                         case '1':
                             Shake = !Shake;
@@ -174,10 +187,16 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                             UpDown = !UpDown;
                             continue;
                         case 'W':
-                            color = Color.White;
+                            color = new(255, 255, 255);
+                            continue;
+                        case 'D':
+                            color = new(0, 0, 0);
                             continue;
                         case 'R':
                             color = new(255, 0, 0);
+                            continue;
+                        case 'O':
+                            color = new(255, 160, 0);
                             continue;
                         case 'Y':
                             color = new(255, 255, 0);
@@ -209,9 +228,15 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                             continue;
                         case 'y':
                             point.Y += size;
+                            Height += size;
+                            Width = Width < (int)width ? (int)width : Width;
+                            width = 0;
                             continue;
                         case 'n':
                             point.Y += size;
+                            Height += size;
+                            Width = Width < (int)width ? (int)width : Width;
+                            width = 0;
                             point.X = p.X;
                             continue;
                         case 'r':
@@ -228,6 +253,96 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                             i--;
                             continue;
                     }
+                }
+                else if (chr == "/") {
+                    switch (text[++i]) {
+                        case '/':
+                            chr = "/";
+                            TextList.Add(new CharTxt() {
+                                txt = chr,
+                                point = new Vector2(point.X, point.Y) + new Vector2(size / 2),
+                                Base_point = point,
+                                color = color,
+                                sleep = TimeOut == 0 ? sleep : TimeOut,
+                                Shake = Shake,
+                                ChangeColor = ChangeColor,
+                                SmallShake = SmallShake,
+                                SmallShake_con = 0,
+                                LRShake = LRShake,
+                                UpDown = UpDown,
+                                UpDown_con = 0,
+                                r = 0
+                            });
+                            point.X += Raylib.MeasureTextEx(font, chr, size, 0).X;
+                            width += Raylib.MeasureTextEx(font, chr, size, 0).X;
+                            break;
+                        case 'B':
+                            switch (text[++i]) {
+                                case 'd':
+                                    BgColor = new(0, 0, 0, 192);
+                                    break;
+                                case 'D':
+                                    BgColor = new(0, 0, 0);
+                                    break;
+                                case 'w':
+                                    BgColor = new(255, 255, 255, 192);
+                                    break;
+                                case 'W':
+                                    BgColor = new(255, 255, 255);
+                                    break;
+                                case 'b':
+                                    BgColor = new(0, 0, 255, 192);
+                                    break;
+                                case 'B':
+                                    BgColor = new(0, 0, 255);
+                                    break;
+                                case 'y':
+                                    BgColor = new(255, 255, 0, 192);
+                                    break;
+                                case 'Y':
+                                    BgColor = new(255, 255, 0);
+                                    break;
+                                case 'g':
+                                    BgColor = new(0, 255, 0, 192);
+                                    break;
+                                case 'G':
+                                    BgColor = new(0, 255, 0);
+                                    break;
+                                case 'r':
+                                    BgColor = new(255, 0, 0, 192);
+                                    break;
+                                case 'R':
+                                    BgColor = new(255, 0, 0);
+                                    break;
+                                case 'c':
+                                    BgColor = new(0, 255, 255, 192);
+                                    break;
+                                case 'C':
+                                    BgColor = new(0, 255, 255);
+                                    break;
+                                case 'o':
+                                    BgColor = new(255, 160, 0, 192);
+                                    break;
+                                case 'O':
+                                    BgColor = new(255, 160, 0);
+                                    break;
+                                case 'p':
+                                    BgColor = new(160, 0, 255, 192);
+                                    break;
+                                case 'P':
+                                    BgColor = new(160, 0, 255);
+                                    break;
+                                default:
+                                    --i;
+                                    break;
+                            }
+                            Bg = true;
+                            continue;
+                        default:
+                            i--;
+                            continue;
+                    }
+                    continue;
                 }
                 else {
                     TextList.Add(new CharTxt() {
@@ -248,10 +363,14 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                     });
                     TimeOut = 0;
                     point.X += Raylib.MeasureTextEx(font, chr, size, 0).X;
+                    width += Raylib.MeasureTextEx(font, chr, size, 0).X;
                 }
             }
             Lenth = TextList.Count;
-            if (timeout == -1) Text_Con = Lenth;
+            if (sleep == -1) Text_Con = Lenth;
+            Width = Width < (int)width ? (int)width : Width;
+            Width += 16;
+            Height += 16;
         }
         public static void EndText(OutMode m = OutMode.Normal) {
             TextOutList.Clear();

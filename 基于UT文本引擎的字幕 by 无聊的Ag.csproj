@@ -3,16 +3,20 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
-    <RootNamespace>基于UT文本引擎的字幕_by_无聊的Ag</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="AOT原生编译%28放弃.net运行时%29\**" />
     <EmbeddedResource Remove="AOT原生编译%28放弃.net运行时%29\**" />
     <None Remove="AOT原生编译%28放弃.net运行时%29\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
