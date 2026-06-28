@@ -140,6 +140,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             mod = OutMode.Normal;
             Bg = false;
             Width = 0;
+            width = 0;
             Height = s;
             BgPoint = p - new Vector2(6, 8);
             BgColor = new(0, 0, 0, 192);
@@ -371,6 +372,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             Width = Width < (int)width ? (int)width : Width;
             Width += 16;
             Height += 16;
+            sleep = 0;
         }
         public static void EndText(OutMode m = OutMode.Normal) {
             TextOutList.Clear();

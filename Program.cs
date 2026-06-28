@@ -187,7 +187,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                     txtdata.Add(new TextData { TimeOut = timeDiff, text = "", outmod = m });
                 }
                 else if (parts.Length <= 5) {
-                    int size = 32;
+                    int size = 50;
                     string font = "text";
                     if (parts.Length < 3) return HasError(i + 2, @"参数过少,\n目标参数至少为4个");
                     string[] SPoint = parts[1].Split(',');
