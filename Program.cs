@@ -42,7 +42,12 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                 Raylib.EndDrawing();
             }
             while ((GetAsyncKeyState(27) & 0x8000) == 0 || (GetAsyncKeyState(114) & 0x8000) == 0) {
+#if DEBUG
+                if (Raylib.IsKeyPressed(KeyboardKey.F1)) Raylib.SetTargetFPS(10);
+                if (Raylib.IsKeyPressed(KeyboardKey.F2)) Raylib.SetTargetFPS(60);
+                if (Raylib.IsKeyPressed(KeyboardKey.F4)) Raylib.SetTargetFPS(300);
                 if (Raylib.IsKeyPressed(KeyboardKey.F3)) Data.debug = !Data.debug;
+#endif
                 if (!Data.Error) {
                     if (Data.speak != 0) {
                         if ((GetAsyncKeyState(Data.speak) & 0x8000) != 0) Data.Run = true;
@@ -65,7 +70,9 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(Color.Blank);
                 ShowText.Draw();
+#if DEBUG
                 if (Data.debug) Raylib.DrawFPS(0, 0);
+#endif
                 Raylib.EndDrawing();
             }
             Raylib.CloseWindow();

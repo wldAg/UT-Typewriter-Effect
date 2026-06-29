@@ -13,21 +13,15 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
         private static int Text_Con;
         private static int size;
         private static int TimeOut = 0;
-        private static bool Shake = false;
-        private static bool ChangeColor = false;
         private static int ChangeColor_con = 300;
-        private static bool SmallShake = false;
-        private static bool LRShake = false;
-        private static bool UpDown = false;
-        private static Color color = Color.White;
+        private static int LRShake_con = 0;
+        private static int UpDown_con = 0;
         private static Font font;
         private static OutMode mod;
         private static bool Bg;
-        private static Vector2 BgPoint;
+        private const int BgWidth = 6;
+        private static Rectangle BgWHC;
         private static Color BgColor;
-        private static int Width;
-        private static int Height;
-        private static float width;
 
         public static void Tick() {
             if (Lenth == 0) return;
@@ -36,9 +30,11 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                     if (Text_Con < Lenth) {
                         if (NextCharTick <= 0) {
                             do {
+                                CharTxt c = TextList[Text_Con];
+                                BgWHC.Width = BgWHC.Width < c.point.X + c.width ? c.point.X + c.width : BgWHC.Width;
+                                BgWHC.Height = BgWHC.Height < c.point.Y ? c.point.Y : BgWHC.Height;
                                 Text_Con++;
-                                if (Text_Con < Lenth) NextCharTick = TextList[Text_Con].sleep;
-                                else NextCharTick = sleep;
+                                NextCharTick = Text_Con < Lenth ? c.sleep : sleep;
                             } while (NextCharTick == -1);
                         }
                         else NextCharTick--;
@@ -48,12 +44,12 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                         if (c.Shake) {
                             if (c.Shake_con == 0) {
                                 c.Shake_con = 2;
-                                c.point = c.Base_point + new Vector2(size / 2) + new Vector2(Data.rad.Next(-size / 8, size / 8), Data.rad.Next(-size / 8, size / 8));
+                                c.point = c.Base_point + new Vector2(size / 2 + Data.rad.Next(-size / 8, size / 8), size / 2 + Data.rad.Next(-size / 8, size / 8));
                             }
                             else c.Shake_con--;
                         }
                         if (c.ChangeColor) c.color = Color.FromHSV((ChangeColor_con - i * 4) % 360, 1, 1);
-                        if (c.UpDown) c.point.Y = c.Base_point.Y + 5 * MathF.Sin((c.UpDown_con += 4) * MathF.PI / 180) + size / 2;
+                        if (c.UpDown) c.point.Y = c.Base_point.Y + size * (0.5f + MathF.Sin((i * 18 - UpDown_con++) * MathF.PI / 180) / 7.0f);
                         if (c.SmallShake) {
                             if (c.SmallShake_con < 4 && c.SmallShake_con != 0) c.SmallShake_con++;
                             else if (c.SmallShake_con >= 4) {
@@ -61,19 +57,17 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                                 c.SmallShake_con = 0;
                             }
                         }
-                        if (c.LRShake) {
-                            c.point = c.Base_point + new Vector2(size / 3) + new Vector2(MathF.Sin(c.LRShake_con * MathF.PI / 180)
-                                * size / 6, -MathF.Cos(c.LRShake_con * MathF.PI / 180) * size / 6);
-                            c.LRShake_con += 4;
-                        }
+                        if (c.LRShake) c.point = c.Base_point + new Vector2(size / 2) + new Vector2(MathF.Sin((i * 5 + LRShake_con) * MathF.PI / 45) * size,
+                                -MathF.Cos((i * 5 + LRShake_con) * MathF.PI / 45) * size) / 5.5f;
                         TextList[i] = c;
                     }
+                    LRShake_con++;
                     if (Data.rad.Next(Lenth / 4 + 1) == 0) {
                         int con = Data.rad.Next(Text_Con);
                         CharTxt c = TextList[con];
                         if (c.SmallShake) {
                             c.SmallShake_con++;
-                            c.point = c.Base_point + new Vector2(size / 2) + new Vector2(Data.rad.Next(-1, 1), Data.rad.Next(-1, 1));
+                            c.point = c.Base_point + new Vector2(size / 2 + Data.rad.Next(-1, 1), size / 2 + Data.rad.Next(-1, 1));
                             TextList[con] = c;
                         }
                     }
@@ -97,7 +91,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             if (Lenth == 0) return;
             switch (mod) {
                 case OutMode.Normal:
-                    if (Bg) Raylib.DrawRectangle((int)BgPoint.X, (int)BgPoint.Y, Width, Height, BgColor);
+                    if (Bg) Raylib.DrawRectangle((int)BgWHC.X, (int)BgWHC.Y, (int)BgWHC.Width - 440 + BgWidth, (int)BgWHC.Height, BgColor);
                     for (int i = 0; i < Text_Con; i++) {
                         CharTxt c = TextList[i];
                         Raylib.DrawTextPro(font, c.txt, c.point, new Vector2(size / 2), c.r, size, 0, c.color);
@@ -123,27 +117,20 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
         /// 小写为半透明
         /// </summary>
         public static void SetText(string text, Font f, Vector2 p, int s) {
-            Shake = false;
-            ChangeColor = false;
-            SmallShake = false;
-            LRShake = false;
-            UpDown = false;
             Lenth = text.Length;
-            sleep = -1;
             font = f;
             size = s;
+            Vector2 point = p;
+            bool Shake = false, ChangeColor = false, SmallShake = false, LRShake = false, UpDown = false;
+            Bg = false;
+            BgWHC = new(p.X - BgWidth, p.Y - BgWidth, 0, 0);
+            BgColor = new(0, 0, 0, 192);
+            sleep = -1;
             TextList.Clear();
             Text_Con = 0;
             NextCharTick = 0;
-            color = Color.White;
-            Vector2 point = p;
+            Color color = Color.White;
             mod = OutMode.Normal;
-            Bg = false;
-            Width = 0;
-            width = 0;
-            Height = s;
-            BgPoint = p - new Vector2(6, 8);
-            BgColor = new(0, 0, 0, 192);
             for (int i = 0; i < Lenth; i++) {
                 string chr = new(text[i], 1);
                 if (chr == "\\") {
@@ -152,8 +139,9 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                             chr = "\\";
                             TextList.Add(new CharTxt() {
                                 txt = chr,
-                                point = new Vector2(point.X, point.Y) + new Vector2(size / 2),
+                                point = new Vector2(size / 2 + point.X, size / 2 + point.Y),
                                 Base_point = point,
+                                width = Raylib.MeasureTextEx(font, chr, size, 0).X,
                                 color = color,
                                 sleep = TimeOut == 0 ? sleep : TimeOut,
                                 Shake = Shake,
@@ -162,15 +150,12 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                                 SmallShake_con = 0,
                                 LRShake = LRShake,
                                 UpDown = UpDown,
-                                UpDown_con = 0,
                                 r = 0
                             });
                             point.X += Raylib.MeasureTextEx(font, chr, size, 0).X;
-                            width += Raylib.MeasureTextEx(font, chr, size, 0).X;
                             break;
                         case 'b':
                             point.X += Raylib.MeasureTextEx(font, " ", size, 0).X;
-                            width += Raylib.MeasureTextEx(font, " ", size, 0).X;
                             break;
                         case '1':
                             Shake = !Shake;
@@ -229,15 +214,9 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                             continue;
                         case 'y':
                             point.Y += size;
-                            Height += size;
-                            Width = Width < (int)width ? (int)width : Width;
-                            width = 0;
                             continue;
                         case 'n':
                             point.Y += size;
-                            Height += size;
-                            Width = Width < (int)width ? (int)width : Width;
-                            width = 0;
                             point.X = p.X;
                             continue;
                         case 'r':
@@ -261,8 +240,9 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                             chr = "/";
                             TextList.Add(new CharTxt() {
                                 txt = chr,
-                                point = new Vector2(point.X, point.Y) + new Vector2(size / 2),
+                                point = new Vector2(size / 2 + point.X, size / 2 + point.Y),
                                 Base_point = point,
+                                width = Raylib.MeasureTextEx(font, chr, size, 0).X,
                                 color = color,
                                 sleep = TimeOut == 0 ? sleep : TimeOut,
                                 Shake = Shake,
@@ -271,11 +251,9 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                                 SmallShake_con = 0,
                                 LRShake = LRShake,
                                 UpDown = UpDown,
-                                UpDown_con = 0,
                                 r = 0
                             });
                             point.X += Raylib.MeasureTextEx(font, chr, size, 0).X;
-                            width += Raylib.MeasureTextEx(font, chr, size, 0).X;
                             break;
                         case 'B':
                             switch (text[++i]) {
@@ -348,8 +326,9 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                 else {
                     TextList.Add(new CharTxt() {
                         txt = chr,
-                        point = new Vector2(point.X, point.Y) + new Vector2(size / 2),
+                        point = new Vector2(size / 2 + point.X, size / 2 + point.Y),
                         Base_point = point,
+                        width = Raylib.MeasureTextEx(font, chr, size, 0).X,
                         color = color,
                         sleep = TimeOut == 0 ? sleep : TimeOut,
                         Shake = Shake,
@@ -359,19 +338,14 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                         Shake_con = 0,
                         LRShake = LRShake,
                         UpDown = UpDown,
-                        UpDown_con = 0,
                         r = 0
                     });
                     TimeOut = 0;
                     point.X += Raylib.MeasureTextEx(font, chr, size, 0).X;
-                    width += Raylib.MeasureTextEx(font, chr, size, 0).X;
                 }
             }
             Lenth = TextList.Count;
             if (sleep == -1) Text_Con = Lenth;
-            Width = Width < (int)width ? (int)width : Width;
-            Width += 16;
-            Height += 16;
             sleep = 0;
         }
         public static void EndText(OutMode m = OutMode.Normal) {
@@ -402,6 +376,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             public string txt;
             public Vector2 Base_point;
             public Vector2 point;
+            public float width;
             public Color color;
             public int sleep;
             public int r;
@@ -411,9 +386,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             public bool SmallShake;
             public sbyte SmallShake_con;
             public bool UpDown;
-            public ushort UpDown_con;
             public bool LRShake;
-            public ushort LRShake_con;
         }
         public struct CharTxt_Out {
             public string txt;
