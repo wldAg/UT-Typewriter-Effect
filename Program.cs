@@ -36,7 +36,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             if (Data.speak != 0 && Data.ShowTiShi && !Data.Error) {
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(Color.Blank);
-                string RunString = $"按下{CtoS(Data.speak)}键开始";
+                string RunString = $"按下{Function.CtoS(Data.speak)}键开始";
                 Raylib.DrawTextPro(MyFont.text, RunString, new((Data.Width - Raylib.MeasureTextEx(MyFont.text, RunString, 32, 0).X) / 2, Data.Height * 0.85f),
                     new(0), 0, 32, 0, Color.White);
                 Raylib.EndDrawing();
@@ -76,34 +76,6 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                 Raylib.EndDrawing();
             }
             Raylib.CloseWindow();
-        }
-        private static string CtoS(char c) {
-            return (int)c switch {
-                32 => "空格",
-                220 => "\\",
-                112 => "F1",
-                113 => "F2",
-                114 => "F3",
-                115 => "F4",
-                116 => "F5",
-                117 => "F6",
-                118 => "F7",
-                119 => "F8",
-                120 => "F9",
-                121 => "F10",
-                122 => "F11",
-                123 => "F12",
-                27 => "ESC?",
-                160 => "左Shift",
-                161 => "右Shift",
-                162 => "左Ctrl",
-                163 => "右Ctrl",
-                164 => "左Alt",
-                165 => "右Alt",
-                91 => "左Win",
-                92 => "右Win",
-                _ => c.ToString()
-            };
         }
     }
     public static class Data {
@@ -163,7 +135,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                             return HasError(1, "时间模式设置错误");
                     }
                     if (parts.Length >= 5) {
-                        speak = parts[4][0] == '\\' ? GetKey(parts[4]) : parts[4][0];
+                        speak = parts[4][0] == '\\' ? Function.GetKey(parts[4]) : parts[4][0];
                         speak = char.IsLower(speak) ? char.ToUpper(speak) : speak;
                         if (parts[4][^1] == '|') ShowTiShi = false;
                     }
@@ -246,36 +218,6 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             else ShowText.SetText(text, MyFont.text, new((Width - Raylib.MeasureTextEx(MyFont.text, text, 40, 0).X) / 2, Height * 0.85f), 40);
             return true;
         }
-        private static char GetKey(string s) {
-            if (s.Length == 1) return (char)220;
-            else {
-                return s[1] switch {
-                    'E' => (char)27,
-                    'b' => (char)32,
-                    'W' => (char)91,
-                    'w' => (char)92,
-                    '!' => (char)112,
-                    '@' => (char)113,
-                    '#' => (char)114,
-                    '$' => (char)115,
-                    '%' => (char)116,
-                    '^' => (char)117,
-                    '&' => (char)118,
-                    '*' => (char)119,
-                    '(' => (char)120,
-                    ')' => (char)121,
-                    '_' => (char)122,
-                    '+' => (char)123,
-                    'S' => (char)160,
-                    's' => (char)161,
-                    'C' => (char)162,
-                    'c' => (char)163,
-                    'A' => (char)164,
-                    'a' => (char)165,
-                    _ => s[1],
-                };
-            }
-        }
     }
     public static class MyFont {
         public static List<SFont> Fonts = [];
@@ -324,6 +266,67 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             }
             return text;
         }
+    }
+    public static class Function {
+        public static char GetKey(string s) {
+            if (s.Length == 1) return (char)220;
+            else {
+                return s[1] switch {
+                    'E' => (char)27,
+                    'b' => (char)32,
+                    'W' => (char)91,
+                    'w' => (char)92,
+                    '!' => (char)112,
+                    '@' => (char)113,
+                    '#' => (char)114,
+                    '$' => (char)115,
+                    '%' => (char)116,
+                    '^' => (char)117,
+                    '&' => (char)118,
+                    '*' => (char)119,
+                    '(' => (char)120,
+                    ')' => (char)121,
+                    '_' => (char)122,
+                    '+' => (char)123,
+                    'S' => (char)160,
+                    's' => (char)161,
+                    'C' => (char)162,
+                    'c' => (char)163,
+                    'A' => (char)164,
+                    'a' => (char)165,
+                    _ => s[1],
+                };
+            }
+        }
+        public static string CtoS(char c) {
+            return (int)c switch {
+                32 => "空格",
+                220 => "\\",
+                112 => "F1",
+                113 => "F2",
+                114 => "F3",
+                115 => "F4",
+                116 => "F5",
+                117 => "F6",
+                118 => "F7",
+                119 => "F8",
+                120 => "F9",
+                121 => "F10",
+                122 => "F11",
+                123 => "F12",
+                27 => "ESC?",
+                160 => "左Shift",
+                161 => "右Shift",
+                162 => "左Ctrl",
+                163 => "右Ctrl",
+                164 => "左Alt",
+                165 => "右Alt",
+                91 => "左Win",
+                92 => "右Win",
+                _ => c.ToString()
+            };
+        }
+
     }
     public struct TextData {
         public int TimeOut;
