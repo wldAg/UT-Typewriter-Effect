@@ -31,8 +31,8 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                         if (NextCharTick <= 0) {
                             do {
                                 CharTxt c = TextList[Text_Con];
-                                BgWHC.Width = BgWHC.Width < c.point.X + c.width ? c.point.X + c.width : BgWHC.Width;
-                                BgWHC.Height = BgWHC.Height < c.point.Y ? c.point.Y : BgWHC.Height;
+                                BgWHC.Width = BgWHC.Width < c.Base_point.X + c.width - BgWHC.X ? c.Base_point.X + c.width - BgWHC.X : BgWHC.Width;
+                                BgWHC.Height = BgWHC.Height < c.Base_point.Y + size - BgWHC.Y ? c.Base_point.Y + size - BgWHC.Y : BgWHC.Height;
                                 Text_Con++;
                                 NextCharTick = Text_Con < Lenth ? c.sleep : sleep;
                             } while (NextCharTick == -1);
@@ -49,7 +49,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                             else c.Shake_con--;
                         }
                         if (c.ChangeColor) c.color = Color.FromHSV((ChangeColor_con - i * 4) % 360, 1, 1);
-                        if (c.UpDown) c.point.Y = c.Base_point.Y + size * (0.5f + MathF.Sin((i * 18 - UpDown_con++) * MathF.PI / 180) / 7.0f);
+                        if (c.UpDown) c.point.Y = c.Base_point.Y + size * (0.5f + MathF.Sin((i * 3 - UpDown_con) * MathF.PI / 50) / 7.0f);
                         if (c.SmallShake) {
                             if (c.SmallShake_con < 4 && c.SmallShake_con != 0) c.SmallShake_con++;
                             else if (c.SmallShake_con >= 4) {
@@ -58,9 +58,10 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                             }
                         }
                         if (c.LRShake) c.point = c.Base_point + new Vector2(size / 2) + new Vector2(MathF.Sin((i * 5 + LRShake_con) * MathF.PI / 45) * size,
-                                -MathF.Cos((i * 5 + LRShake_con) * MathF.PI / 45) * size) / 5.5f;
+                                -MathF.Cos((i * 5 + LRShake_con) * MathF.PI / 45) * size) / 7f;
                         TextList[i] = c;
                     }
+                    UpDown_con++;
                     LRShake_con++;
                     if (Data.rad.Next(Lenth / 4 + 1) == 0) {
                         int con = Data.rad.Next(Text_Con);
@@ -91,7 +92,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             if (Lenth == 0) return;
             switch (mod) {
                 case OutMode.Normal:
-                    if (Bg) Raylib.DrawRectangle((int)BgWHC.X, (int)BgWHC.Y, (int)BgWHC.Width - 440 + BgWidth, (int)BgWHC.Height, BgColor);
+                    if (Bg) Raylib.DrawRectangle((int)BgWHC.X, (int)BgWHC.Y, (int)BgWHC.Width + BgWidth, (int)BgWHC.Height + BgWidth, BgColor);
                     for (int i = 0; i < Text_Con; i++) {
                         CharTxt c = TextList[i];
                         Raylib.DrawTextPro(font, c.txt, c.point, new Vector2(size / 2), c.r, size, 0, c.color);
@@ -123,7 +124,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             Vector2 point = p;
             bool Shake = false, ChangeColor = false, SmallShake = false, LRShake = false, UpDown = false;
             Bg = false;
-            BgWHC = new(p.X - BgWidth, p.Y - BgWidth, 0, 0);
+            BgWHC = new(p.X - BgWidth, p.Y - BgWidth, new(0));
             BgColor = new(0, 0, 0, 192);
             sleep = -1;
             TextList.Clear();
