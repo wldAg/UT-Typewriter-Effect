@@ -67,7 +67,14 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                         Data.TimeOut = td.TimeOut;
 
                         if (string.IsNullOrEmpty(td.text)) ShowText.EndText(td.outmod);
-                        else ShowText.SetText(td.text, MyFont.Get(td.font), td.point, td.fontsize);
+                        else {
+                            char error = ShowText.SetText(td.text, MyFont.Get(td.font), td.point);
+                            if (error != 0) {
+                                ShowText.SetText(@$"\T2|/B\RError:第{Data.NextLine + 1}句\\{error}转义错误!", MyFont.text,
+                                    new((Data.Width - Raylib.MeasureTextEx(MyFont.text, @$"Error:第{Data.NextLine + 1}句\{error}转义错误!", 40, 0).X) / 2, Data.Height * 0.85f));
+                                Data.Error = true;
+                            }
+                        }
                         Data.NextLine++;
                     }
                     else Data.TimeOut--;
@@ -108,7 +115,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
         public static bool LoadFile() {
             if (!File.Exists(FilePath)) {
                 ShowText.SetText(@$"/B\RFile Not Find!\n没找到\Y{FilePath}\R启动文件!", MyFont.text,
-                    new((Width - Raylib.MeasureTextEx(MyFont.text, $"没找到\\Y{FilePath}\\R启动文件!", 40, 0).X) / 2, Height * 0.85f), 40);
+                    new((Width - Raylib.MeasureTextEx(MyFont.text, $"没找到\\Y{FilePath}\\R启动文件!", 40, 0).X) / 2, Height * 0.85f));
                 return true;
             }
             using StreamReader TextFile = new(FilePath, Encoding.UTF8);
@@ -156,7 +163,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             }
             if (rawLines.Count == 0) {
                 ShowText.SetText(@$"/B\RError:{FilePath}文件为空!", MyFont.text,
-                    new((Width - Raylib.MeasureTextEx(MyFont.text, $"Error:{FilePath}文件为空!", 40, 0).X) / 2, Height * 0.85f), 40);
+                    new((Width - Raylib.MeasureTextEx(MyFont.text, $"Error:{FilePath}文件为空!", 40, 0).X) / 2, Height * 0.85f));
                 return true;
             }
             for (int i = 0; i < rawLines.Count; i++) {
@@ -221,16 +228,16 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                         }
                     w += Raylib.MeasureTextEx(MyFont.text, text[i].ToString(), 40, 0).X;
                 }
-                ShowText.SetText(text, MyFont.text, new((Width - (width < w ? w : width)) / 2, Height * 0.85f), 40);
+                ShowText.SetText(text, MyFont.text, new((Width - (width < w ? w : width)) / 2, Height * 0.85f));
             }
-            else ShowText.SetText(text, MyFont.text, new((Width - Raylib.MeasureTextEx(MyFont.text, text, 40, 0).X) / 2, Height * 0.85f), 40);
+            else ShowText.SetText(text, MyFont.text, new((Width - Raylib.MeasureTextEx(MyFont.text, text, 40, 0).X) / 2, Height * 0.85f));
             return true;
         }
     }
     public static class MyFont {
         public static List<SFont> Fonts = [];
         public static int[] ASCII = new int[95];
-        public const string txt = "没找左右到启动文件加载出错误第缺失行按键头开必须在至少一格模式只有且需要个段字线下不据体大小延迟坐原始窗口设置标时间可能是本中包含空请将空用代替件为空参数过少目至";
+        public const string txt = "没找左右到启动文件加载出错误第缺失行按键头开必须在至少一格模式只句转义有且需要个段字线下不据体大小延迟坐原始窗口设置标时间可能是本中包含空请将空用代替件为空参数过少目至";
         public const string Path = "Font\\";
         public static Font text;
         public static void Init() {
