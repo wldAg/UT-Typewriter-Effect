@@ -17,7 +17,15 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                     case "cratefile":
                     case "help":
                         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                        File.WriteAllText("Text.txt", $"set {GetSystemMetrics(0)} {GetSystemMetrics(1)} to \\b //这是一段示例，这一行末尾是唯一可以写注释的地方，除非你知道你在做什么，否则不要修改第一行前3个参数\r\n300 400,50 \\T3|/B\\5Hello\\b\\5\\t40|我是\\2Ag大爹\\2\\Y开发\\W的\\T30|字幕菌 text 80\r\n120 ob\r\n120 700,880 \\T3|\\1我可以震动\\1 text 80\r\n80 ob\r\n120 700,880 \\T3|\\2可以变色\\2 text 80\r\n80 ob\r\n120 700,800 \\T3|\\3偷偷震动\\3 text 80\r\n90 ob\r\n120 700,800 \\T3|\\4转圈圈ing...\\4 text 80\r\n90 ob\r\n120 700,800 \\T3|\\5上下浮动\\5 text 80\r\n90 ob\r\n120 700,800 \\T3|\\R以\\Y及\\B变\\P色\\C哦\\G。 text 80\r\n90 ob\r\n120 100,100 \\T3|还可以自定义位置 text 80\r\n110 ob\r\n360 400,600 \\T2|换行\\n\\t60|任意换行?\\y\\t60|123456\\n\\T40|A\\xg\\x大\\x爹\\T2|\\n重叠字符 text 60\r\n100 ob\r\n360 400,300 \\T3|\\1\\R叠\\G加\\C特\\1\\W\\3\\P效也\\3\\W\\5\\Y\"可以\"\\5\\2\\4的哦\\4\\5...\\5\\n\\W\\1\\2\\3\\4\\5(部分特效间不兼容)\\r text 80\r\n120 ob\r\n400 150,200 \\T8|/B\\Ybey\\R=（\\n\\W对了，对Win7有点不支持呵呵\\nF3+ESC可以提前退出\\n(我去怎么不早说) text 120\r\n120 ob");
+                        File.WriteAllText("Text.txt", $"set {GetSystemMetrics(0)} {GetSystemMetrics(1)} to \\b //这是一段示例，这一行末尾是唯一可以写注释的地方" +
+                            $"，除非你知道你在做什么，否则不要修改第一行前3个参数\r\n300 400,50 \\T3|/B\\5Hello\\b\\5\\t40|我是\\2Ag大爹\\2\\Y开发\\W的\\T30|字幕菌 text 80" +
+                            $"\r\n120 ob\r\n120 700,880 \\T3|\\1我可以震动\\1 text 80\r\n80 ob\r\n120 700,880 \\T3|\\2可以变色\\2 text 80\r\n80 ob\r\n" +
+                            $"120 700,800 \\T3|\\3偷偷震动\\3 text 80\r\n90 ob\r\n120 700,800 \\T3|\\4转圈圈ing...\\4 text 80\r\n90 ob\r\n" +
+                            $"120 700,800 \\T3|\\5上下浮动\\5 text 80\r\n90 ob\r\n120 700,800 \\T3|\\R以\\Y及\\B变\\P色\\C哦\\G。 text 80\r\n90 ob\r\n" +
+                            $"120 100,100 \\T3|还可以自定义位置 text 80\r\n110 ob\r\n360 400,600 \\T2|换行\\n\\t60|任意换行?\\y\\t60|123456\\n\\T40|" +
+                            $"A\\xg\\x大\\x爹\\T2|\\n重叠字符 text 60\r\n100 ob\r\n360 400,300 \\T3|\\1\\R叠\\G加\\C特\\1\\W\\3\\P效也\\3\\W\\5\\Y\"可以" +
+                            $"\"\\5\\2\\4的哦\\4\\5...\\5\\n\\W\\1\\2\\3\\4\\5(部分特效间不兼容)\\r text 80\r\n120 ob\r\n400 150,200 \\T8|/B\\Ybey\\R=（\\n" +
+                            $"\\W对了，对Win7有点不支持呵呵\\nF3+ESC可以提前退出\\n(我去怎么不早说) text 120\r\n120 ob");
                         File.WriteAllText("启动测试文件.bat", $"\"{Path.GetFileName(Environment.ProcessPath)}\" Text.txt", Encoding.GetEncoding("GB2312"));
                         return;
                     default:
