@@ -3,37 +3,34 @@ using System.Numerics;
 using System.Text;
 
 namespace 基于UT文本引擎的字幕_by_无聊的Ag {
-    public static class ShowText {
+    public class ShowText {
         private const int BgWidth = 6;
-        private static readonly List<CharTxt> TextList = [];
-        private static readonly List<CharTxt_Out> TextOutList = [];
-        private static readonly StringBuilder numtiem = new(4);
-        private static int Lenth;
-        private static int sleep;
-        private static int NextCharTick;
-        private static int Text_Con;
-        private static int size;
-        private static int ChangeColor_con = 300;
-        private static int LRShake_con = 0;
-        private static int UpDown_con = 0;
-        private static Font font;
-        private static OutMode mod;
-        private static bool Bg;
-        private static Rectangle BgWHC;
-        private static Color BgColor;
+        private readonly List<CharTxt> TextList = [];
+        private readonly List<CharTxt_Out> TextOutList = [];
+        private readonly StringBuilder numtiem = new(4);
+        private int Lenth;
+        private int sleep;
+        private int NextCharTick;
+        private int Text_Con;
+        private int ChangeColor_con = 300;
+        private int LRShake_con = 0;
+        private int UpDown_con = 0;
+        private bool Bg;
+        private Font font;
+        private OutMode mod;
+        private Rectangle BgWHC;
+        private Color BgColor;
 
-        public static void Tick() {
+        public void Tick() {
             if (Lenth == 0) return;
             switch (mod) {
                 case OutMode.Normal:
                     if (Text_Con < Lenth) {
                         if (NextCharTick <= 0) {
                             do {
-                                CharTxt c = TextList[Text_Con];
-                                BgWHC.Width = BgWHC.Width < c.Base_point.X + c.width - BgWHC.X ? c.Base_point.X + c.width - BgWHC.X : BgWHC.Width;
-                                BgWHC.Height = BgWHC.Height < c.Base_point.Y + c.size - BgWHC.Y ? c.Base_point.Y + c.size - BgWHC.Y : BgWHC.Height;
-                                Text_Con++;
-                                NextCharTick = Text_Con < Lenth ? c.sleep : sleep;
+                                BgWHC.Width = Math.Max(BgWHC.Width, TextList[Text_Con].Base_point.X + TextList[Text_Con].width - BgWHC.X);
+                                BgWHC.Height = Math.Max(BgWHC.Height, TextList[Text_Con].Base_point.Y + TextList[Text_Con].size - BgWHC.Y);
+                                NextCharTick = (++Text_Con < Lenth) ? TextList[Text_Con].sleep : sleep;
                             } while (NextCharTick == -1);
                         }
                         else NextCharTick--;
@@ -87,7 +84,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             }
             ChangeColor_con++;
         }
-        public static void Draw() {
+        public void Draw() {
             if (Lenth == 0) return;
             switch (mod) {
                 case OutMode.Normal:
@@ -116,10 +113,10 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
         /// R:红 W:白 Y:黄 B:蓝 P:紫 C:青 G:绿 O:橙 D:黑
         /// 小写为半透明
         /// </summary>
-        public static char SetText(string text, Font f, Vector2 p) {
+        public char SetText(string text, Font f, Vector2 p) {
             Lenth = text.Length;
             font = f;
-            size = 40;
+            int size = 40;
             Vector2 point = p;
             bool Shake = false, ChangeColor = false, SmallShake = false, LRShake = false, UpDown = false;
             int TimeOut = 0, fontsize = 0;
@@ -215,12 +212,12 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                         case 's':
                             numtiem.Clear();
                             for (i++; i < Lenth && text[i] != '|'; i++) numtiem.Append(text[i]);
-                            if (!int.TryParse(numtiem.ToString(), out fontsize)) return 's';
+                            fontsize = int.Parse(numtiem.ToString());
                             continue;
                         case 'S':
                             numtiem.Clear();
                             for (i++; i < Lenth && text[i] != '|'; i++) numtiem.Append(text[i]);
-                            if (!int.TryParse(numtiem.ToString(), out size)) return 'S';
+                            size = int.Parse(numtiem.ToString());
                             continue;
                         case 'x':
                             point.X = p.X;
@@ -362,7 +359,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             sleep = 0;
             return (char)0;
         }
-        public static void EndText(OutMode m = OutMode.Normal) {
+        public void EndText(OutMode m = OutMode.Normal) {
             TextOutList.Clear();
             switch (m) {
                 case OutMode.OutBreak:

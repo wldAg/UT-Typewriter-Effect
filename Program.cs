@@ -1,4 +1,5 @@
 ﻿using Raylib_cs;
+using System.Data;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -17,15 +18,28 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                     case "cratefile":
                     case "help":
                         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                        File.WriteAllText("Text.txt", $"set {GetSystemMetrics(0)} {GetSystemMetrics(1)} to \\b //这是一段示例，这一行末尾是唯一可以写注释的地方" +
-                            $"，除非你知道你在做什么，否则不要修改第一行前3个参数\r\n300 400,50 \\T3|/B\\5Hello\\b\\5\\t40|我是\\2Ag大爹\\2\\Y开发\\W的\\T30|字幕菌 text 80" +
-                            $"\r\n120 ob\r\n120 700,880 \\T3|\\1我可以震动\\1 text 80\r\n80 ob\r\n120 700,880 \\T3|\\2可以变色\\2 text 80\r\n80 ob\r\n" +
-                            $"120 700,800 \\T3|\\3偷偷震动\\3 text 80\r\n90 ob\r\n120 700,800 \\T3|\\4转圈圈ing...\\4 text 80\r\n90 ob\r\n" +
-                            $"120 700,800 \\T3|\\5上下浮动\\5 text 80\r\n90 ob\r\n120 700,800 \\T3|\\R以\\Y及\\B变\\P色\\C哦\\G。 text 80\r\n90 ob\r\n" +
-                            $"120 100,100 \\T3|还可以自定义位置 text 80\r\n110 ob\r\n360 400,600 \\T2|换行\\n\\t60|任意换行?\\y\\t60|123456\\n\\T40|" +
-                            $"A\\xg\\x大\\x爹\\T2|\\n重叠字符 text 60\r\n100 ob\r\n360 400,300 \\T3|\\1\\R叠\\G加\\C特\\1\\W\\3\\P效也\\3\\W\\5\\Y\"可以" +
-                            $"\"\\5\\2\\4的哦\\4\\5...\\5\\n\\W\\1\\2\\3\\4\\5(部分特效间不兼容)\\r text 80\r\n120 ob\r\n400 150,200 \\T8|/B\\Ybey\\R=（\\n" +
-                            $"\\W对了，对Win7有点不支持呵呵\\nF3+ESC可以提前退出\\n(我去怎么不早说) text 120\r\n120 ob");
+                        File.WriteAllText("Text.txt", $@"设置 {GetSystemMetrics(0)} {GetSystemMetrics(1)} to \b
+                            300 400,50 \T3|/B\S40|\5Hello\b\5\t40|我\2Ag大爹\2\Y\S80|开发\W的\T30|字幕菌又\T3|回来了 text
+                            120 破碎
+                            300 400,400 \T3|\S80|这次带来了\4一些\4\2好玩\2的\T5|\5更新\5 text
+                            120 ob
+                            250 400,880 \T2|\S80|首先\t45|\G修复了\W字体模糊\2\4(之前的很糊)\2\4 text
+                            250 400,400 \T2|\S80|其次\t45|\Y简化了\W脚本,\3现在是比较简洁的了\3 text
+                            250 300,400 \T2|\S80|/B\5还添加了背景色哦\5!!! text
+                            280 300,400 \T2|\S80|/Bg\2当然\t45|,背景也可以定义其它颜色 text
+                            300 300,400 \T5|\S80|当然\t30|也可以在\T-1|中途部分全打印\T2| text
+                            300 300,0 \T2|\S80|添加了退场动画(第一句那个)\n\2并且支持离场特效加载(我离开时还会变色)\2 text
+                            140 ob
+                            400 300,600 \T2|还支持按键启动(指程序启动时按某些键开始)\n目前只有Fn+数字+字幕+空格,win、alt、shift、ctrl、ESC?!键 text
+                            120 ob
+                            400 300,400 \T2|\S80|/B项目已经开源github了,感兴趣可以看看\2QwQ\2\nhttps:////github.com//wldAg//UT-Typewriter-Effect\n顺便点个\2Star\2 text
+                            100 ob
+                            360 300,400 \T2|\S80|/By其它内容不一定都能讲到,但不过可以\n参考github下的文档(虽然写的拉完了) text
+                            200 300,400 \T2|\S80|/Br这里在放个好玩的,可以猜猜写的什么 text
+                            300 300,400 \T2|\S80|\FG\F/BPlease\bgive\bthis\bvideo\b\T5|a\n\bone-click\btriple!!!\T2|\n\bif\byou\blike\bit. G
+                            120 ob
+                            400 300,400 \T6|\S100|/B\Ybey\R=（\n\W对了,现在对Win7还有点不支持\B:\b(\W\nF3+ESC可以提前退出\n(我去怎么不早说) text
+                            120 ob");
                         File.WriteAllText("启动测试文件.bat", $"\"{Path.GetFileName(Environment.ProcessPath)}\" Text.txt", Encoding.GetEncoding("GB2312"));
                         return;
                     default:
@@ -39,7 +53,6 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             Raylib.InitWindow(0, 0, "");
             SetCursorPos(mouse.X, mouse.Y);
             Raylib.SetTargetFPS(60);
-            MyFont.Init();
             Data.Error = Data.LoadFile();
             if (Data.speak != 0 && Data.ShowTiShi && !Data.Error) {
                 Raylib.BeginDrawing();
@@ -66,11 +79,11 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                         TextData td = Data.txtdata[Data.NextLine];
                         Data.TimeOut = td.TimeOut;
 
-                        if (string.IsNullOrEmpty(td.text)) ShowText.EndText(td.outmod);
+                        if (string.IsNullOrEmpty(td.text)) Data.st.EndText(td.outmod);
                         else {
-                            char error = ShowText.SetText(td.text, MyFont.Get(td.font), td.point);
+                            char error = Data.st.SetText(td.text, MyFont.Get(td.font), td.point);
                             if (error != 0) {
-                                ShowText.SetText(@$"\T2|/B\RError:第{Data.NextLine + 1}句\\{error}转义错误!", MyFont.text,
+                                Data.st.SetText(@$"\T2|/B\RError:第{Data.NextLine + 1}句\\{error}转义错误!", MyFont.text,
                                     new((Data.Width - Raylib.MeasureTextEx(MyFont.text, @$"Error:第{Data.NextLine + 1}句\{error}转义错误!", 40, 0).X) / 2, Data.Height * 0.85f));
                                 Data.Error = true;
                             }
@@ -79,12 +92,12 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                     }
                     else Data.TimeOut--;
                 }
-                ShowText.Tick();
+                Data.st.Tick();
                 Data.Tick++;
 
                 Raylib.BeginDrawing();
                 Raylib.ClearBackground(Color.Blank);
-                ShowText.Draw();
+                Data.st.Draw();
 #if DEBUG
                 if (Data.debug) Raylib.DrawFPS(0, 0);
 #endif
@@ -95,6 +108,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
     }
     public static class Data {
         public static List<TextData> txtdata = [];
+        public static ShowText st = new();
         public static OutMode outmod;
         public static TimeMode timemod;
         public static Random rad = new();
@@ -114,7 +128,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
         public static bool ShowTiShi = true;
         public static bool LoadFile() {
             if (!File.Exists(FilePath)) {
-                ShowText.SetText(@$"/B\RFile Not Find!\n没找到\Y{FilePath}\R启动文件!", MyFont.text,
+                st.SetText(@$"/B\RFile Not Find!\n没找到\Y{FilePath}\R启动文件!", MyFont.text,
                     new((Width - Raylib.MeasureTextEx(MyFont.text, $"没找到\\Y{FilePath}\\R启动文件!", 40, 0).X) / 2, Height * 0.85f));
                 return true;
             }
@@ -123,7 +137,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             int lineNum = 0;
 
             while ((Text = TextFile.ReadLine()) != null) {
-                if (lineNum == 0) if (Text[..3] != "set") return HasError(1, "开头必须是set");
+                if (lineNum == 0) if (Text[..3] != "set" && Text[..2] != "设置") return HasError(1, "开头必须是set或设置");
                 lineNum++;
                 Text = Text.Trim();
                 if (string.IsNullOrEmpty(Text)) continue;
@@ -132,7 +146,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                 if (parts.Length == 0) continue;
 
                 int time = 0;
-                if (parts[0] == "set") {
+                if (parts[0] == "set"|| parts[0] == "设置") {
                     if (lineNum != 1) return HasError(lineNum, "set只能有一个且必须在第一行");
                     if (parts.Length < 4) return HasError(1, "设置参数至少要为4个");
                     if (!int.TryParse(parts[2], out FHeight)) return HasError(1, "原始窗口大小设置错误");
@@ -140,10 +154,13 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                     switch (parts[3].ToLower()) {
                         case "to":
                         case "timeout":
+                        case "延时":
+                        case "延迟":
                             timemod = TimeMode.TimeOut;
                             break;
                         case "tl":
                         case "timeline":
+                        case "时间线":
                             timemod = TimeMode.TimeLine;
                             break;
                         default:
@@ -162,7 +179,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                 rawLines.Add((time, parts));
             }
             if (rawLines.Count == 0) {
-                ShowText.SetText(@$"/B\RError:{FilePath}文件为空!", MyFont.text,
+                st.SetText(@$"/B\RError:{FilePath}文件为空!", MyFont.text,
                     new((Width - Raylib.MeasureTextEx(MyFont.text, $"Error:{FilePath}文件为空!", 40, 0).X) / 2, Height * 0.85f));
                 return true;
             }
@@ -176,12 +193,12 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                     OutMode m = parts[1].ToLower() switch {
                         "ob" => OutMode.OutBreak,
                         "outbreak" => OutMode.OutBreak,
+                        "破碎" => OutMode.OutBreak,
                         _ => OutMode.Normal,
                     };
                     txtdata.Add(new TextData { TimeOut = timeDiff, text = "", outmod = m });
                 }
                 else if (parts.Length <= 5) {
-                    int size = 50;
                     string font = "text";
                     if (parts.Length < 3) return HasError(i + 2, @"参数过少,\n目标参数至少为4个");
                     string[] SPoint = parts[1].Split(',');
@@ -191,7 +208,6 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                     }else return HasError(i + 2, "坐标错误");
                     if (parts.Length >= 4) {
                         if (File.Exists($"{MyFont.Path}{parts[3]}.ttf")) font = parts[3]; else return HasError(i + 2, $"缺失字体{parts[3]}");
-                        if (parts.Length == 5) if (!int.TryParse(parts[4], out size)) return HasError(i + 2, "字体大小错误");
                     }
 
                     txtdata.Add(new TextData {
@@ -199,20 +215,24 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                         point = new Vector2(X, Y) * WinSize,
                         outmod = OutMode.Normal,
                         text = parts[2],
-                        font = font,
-                        fontsize = (int)(size * WinSize)
+                        font = font
                     });
                 }
                 else return HasError(i + 2, @"格式错误\n(可能是文本中包含空格,请将空格用\\b代替)");
             }
-            foreach (TextData t in txtdata) MyFont.Add(t.font, t.text, t.fontsize);
+            MyFont.line = 0;
+            foreach (TextData t in txtdata) {
+                int l = MyFont.Add(t.font, t.text);
+                if (l != -1) return HasError(l, @"\\s或\\S转义错误");
+            }
             MyFont.Set();
             NextLine = 0;
             TimeOut = 0;
             return false;
         }
         private static bool HasError(int line,string info) {
-            string text = @$"\T2|/B\R\3文件加载出错:第{line}行{info}";
+            string l = line == -1 ? "未知" : line.ToString();
+            string text = @$"\T2|/B\R\3文件加载出错:第{l}行{info}";
             if (info.Contains("\\n")) {
                 float width = 0, w = 0;
                 for (int i = 10; i < text.Length; i++) {
@@ -228,37 +248,52 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                         }
                     w += Raylib.MeasureTextEx(MyFont.text, text[i].ToString(), 40, 0).X;
                 }
-                ShowText.SetText(text, MyFont.text, new((Width - (width < w ? w : width)) / 2, Height * 0.85f));
+                st.SetText(text, MyFont.text, new((Width - (width < w ? w : width)) / 2, Height * 0.85f));
             }
-            else ShowText.SetText(text, MyFont.text, new((Width - Raylib.MeasureTextEx(MyFont.text, text, 40, 0).X) / 2, Height * 0.85f));
+            else st.SetText(text, MyFont.text, new((Width - Raylib.MeasureTextEx(MyFont.text, text, 40, 0).X) / 2, Height * 0.85f));
             return true;
         }
     }
     public static class MyFont {
         public static List<SFont> Fonts = [];
-        public static int[] ASCII = new int[95];
-        public const string txt = "没找左右到启动文件加载出错误第缺失行按键头开必须在至少一格模式只句转义有且需要个段字线下不据体大小延迟坐原始窗口设置标时间可能是本中包含空请将空用代替件为空参数过少目至";
+        private const string txt = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM,./;'[{}\"]<>?:=-0987654321`~!@#$%^&*()_+\\|" +
+            $"没找左右到启动文件加载出错误第缺失行按键头开必须在至少一格模式只句转义有且或需要个段字线下不据体大小延迟坐原始窗口设置标时间可能是本中包含空请将空用代替件为空参数过少目至";
         public const string Path = "Font\\";
-        public static Font text;
-        public static void Init() {
-            for (char i = (char)0; i < ASCII.Length; i++) ASCII[i] = i + 32;
-            text = LoadChinaFont("text", txt, 40);
-        }
+        public static Font text = LoadChinaFont("text", txt, 40);
+        public static int line;
         public static Font LoadChinaFont(string font, string textfile, int size = 32) {
             int[] chr_zn = [..textfile.Distinct().Select(c => (int)c)];
-            int[] chr = new int[95 + chr_zn.Length];
-            Array.Copy(ASCII, 0, chr, 0, 95);
-            Array.Copy(chr_zn, 0, chr, 95, chr_zn.Length);
-            return Raylib.LoadFontEx($"{Path}{font}.ttf", size, chr, chr.Length); ;
+            return Raylib.LoadFontEx($"{Path}{font}.ttf", size, chr_zn, chr_zn.Length);
         }
-        public static void Add(string f, string t, int s) {
+        public static int Add(string f, string t) {
+            int s = 50;
+            line++;
+            foreach (SFont sf in Fonts) {
+                string str = " " + sf.txt.ToString().ToLower();
+                if (str.Contains("\\s")) {
+                    string[] strs = str.Split("\\s");
+                    if (strs.Length > 1) {
+                        int i = 1;
+                        if (strs[0] == " ") i = 2;
+                        StringBuilder num = new(3);
+                        for (; i < strs.Length; i++) {
+                            for (int j = 0; j < strs[i].Length && strs[i][j] != '|'; j++) {
+                                num.Append(strs[i][j]);
+                            }
+                            if (!int.TryParse(num.ToString(), out int size)) return line;
+                            s = s < size ? size : s;
+                            num.Clear();
+                        }
+                    }
+                }
+            }
             for (int i = 0; i < Fonts.Count; i++) {
                 SFont sf = Fonts[i];
                 if (sf.name == f) {
                     sf.txt.Append(t);
                     sf.size = sf.size < s ? s : sf.size;
                     Fonts[i] = sf;
-                    return;
+                    return -1;
                 }
             }
             Fonts.Add(new SFont() {
@@ -266,6 +301,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                 txt = new(t),
                 size = s
             });
+            return -1;
         }
         public static void Set() {
             for (int i=0;i<Fonts.Count;i++) {
@@ -349,7 +385,6 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
         public OutMode outmod;
         public string text;
         public string font;
-        public int fontsize;
     }
     public struct SFont {
         public string name;
