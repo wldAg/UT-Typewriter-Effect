@@ -146,7 +146,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                 if (parts.Length == 0) continue;
 
                 int time = 0;
-                if (parts[0] == "set"|| parts[0] == "设置") {
+                if (parts[0] == "set" || parts[0] == "设置") {
                     if (lineNum != 1) return HasError(lineNum, "set只能有一个且必须在第一行");
                     if (parts.Length < 4) return HasError(1, "设置参数至少要为4个");
                     if (!int.TryParse(parts[2], out FHeight)) return HasError(1, "原始窗口大小设置错误");
@@ -205,7 +205,8 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                     if (SPoint.Length == 2) {
                         if (!int.TryParse(SPoint[0], out X)) return HasError(i + 2, "X坐标错误");
                         if (!int.TryParse(SPoint[1], out Y)) return HasError(i + 2, "Y坐标错误");
-                    }else return HasError(i + 2, "坐标错误");
+                    }
+                    else return HasError(i + 2, "坐标错误");
                     if (parts.Length >= 4) {
                         if (File.Exists($"{MyFont.Path}{parts[3]}.ttf")) font = parts[3]; else return HasError(i + 2, $"缺失字体{parts[3]}");
                     }
@@ -230,7 +231,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             TimeOut = 0;
             return false;
         }
-        private static bool HasError(int line,string info) {
+        private static bool HasError(int line, string info) {
             string l = line == -1 ? "未知" : line.ToString();
             string text = @$"\T2|/B\R\3文件加载出错:第{l}行{info}";
             if (info.Contains("\\n")) {
@@ -262,7 +263,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
         public static Font text = LoadChinaFont("text", txt, 40);
         public static int line;
         public static Font LoadChinaFont(string font, string textfile, int size = 32) {
-            int[] chr_zn = [..textfile.Distinct().Select(c => (int)c)];
+            int[] chr_zn = [.. textfile.Distinct().Select(c => (int)c)];
             return Raylib.LoadFontEx($"{Path}{font}.ttf", size, chr_zn, chr_zn.Length);
         }
         public static int Add(string f, string t) {
@@ -304,7 +305,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
             return -1;
         }
         public static void Set() {
-            for (int i=0;i<Fonts.Count;i++) {
+            for (int i = 0; i < Fonts.Count; i++) {
                 SFont f = Fonts[i];
                 f.font = LoadChinaFont(f.name, f.txt.ToString(), f.size);
                 f.txt.Clear();

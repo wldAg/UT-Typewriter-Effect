@@ -157,48 +157,20 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                         case 'b':
                             point.X += Raylib.MeasureTextEx(font, " ", FontSize, 0).X;
                             break;
-                        case '1':
-                            Shake = !Shake;
-                            continue;
-                        case '2':
-                            ChangeColor = !ChangeColor;
-                            continue;
-                        case '3':
-                            SmallShake = !SmallShake;
-                            continue;
-                        case '4':
-                            LRShake = !LRShake;
-                            continue;
-                        case '5':
-                            UpDown = !UpDown;
-                            continue;
-                        case 'W':
-                            color = new(255, 255, 255);
-                            continue;
-                        case 'D':
-                            color = new(0, 0, 0);
-                            continue;
-                        case 'R':
-                            color = new(255, 0, 0);
-                            continue;
-                        case 'O':
-                            color = new(255, 160, 0);
-                            continue;
-                        case 'Y':
-                            color = new(255, 255, 0);
-                            continue;
-                        case 'B':
-                            color = new(0, 0, 255);
-                            continue;
-                        case 'G':
-                            color = new(0, 255, 0);
-                            continue;
-                        case 'P':
-                            color = new(160, 0, 255);
-                            continue;
-                        case 'C':
-                            color = new(0, 255, 255);
-                            break;
+                        case '1': Shake = !Shake; continue;
+                        case '2': ChangeColor = !ChangeColor; continue;
+                        case '3': SmallShake = !SmallShake; continue;
+                        case '4': LRShake = !LRShake; continue;
+                        case '5': UpDown = !UpDown; continue;
+                        case 'W': color = new(255, 255, 255); continue;
+                        case 'D': color = new(0, 0, 0); continue;
+                        case 'R': color = new(255, 0, 0); continue;
+                        case 'O': color = new(255, 160, 0); continue;
+                        case 'Y': color = new(255, 255, 0); continue;
+                        case 'B': color = new(0, 0, 255); continue;
+                        case 'G': color = new(0, 255, 0); continue;
+                        case 'P': color = new(160, 0, 255); continue;
+                        case 'C': color = new(0, 255, 255); break;
                         case 't':
                             numtiem.Clear();
                             for (i++; i < Lenth && text[i] != '|'; i++) numtiem.Append(text[i]);
@@ -219,12 +191,8 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                             for (i++; i < Lenth && text[i] != '|'; i++) numtiem.Append(text[i]);
                             size = int.Parse(numtiem.ToString());
                             continue;
-                        case 'x':
-                            point.X = p.X;
-                            continue;
-                        case 'y':
-                            point.Y += FontSize;
-                            continue;
+                        case 'x': point.X = p.X; continue;
+                        case 'y': point.Y += FontSize; continue;
                         case 'n':
                             point.Y += FontSize;
                             point.X = p.X;
@@ -237,9 +205,7 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                             UpDown = false;
                             color = Color.White;
                             break;
-                        default:
-                            i--;
-                            continue;
+                        default: i--; continue;
                     }
                 }
                 else if (chr == "/") {
@@ -266,69 +232,29 @@ namespace 基于UT文本引擎的字幕_by_无聊的Ag {
                             break;
                         case 'B':
                             switch (text[++i]) {
-                                case 'd':
-                                    BgColor = new(0, 0, 0, 192);
-                                    break;
-                                case 'D':
-                                    BgColor = new(0, 0, 0);
-                                    break;
-                                case 'w':
-                                    BgColor = new(255, 255, 255, 192);
-                                    break;
-                                case 'W':
-                                    BgColor = new(255, 255, 255);
-                                    break;
-                                case 'b':
-                                    BgColor = new(0, 0, 255, 192);
-                                    break;
-                                case 'B':
-                                    BgColor = new(0, 0, 255);
-                                    break;
-                                case 'y':
-                                    BgColor = new(255, 255, 0, 192);
-                                    break;
-                                case 'Y':
-                                    BgColor = new(255, 255, 0);
-                                    break;
-                                case 'g':
-                                    BgColor = new(0, 255, 0, 192);
-                                    break;
-                                case 'G':
-                                    BgColor = new(0, 255, 0);
-                                    break;
-                                case 'r':
-                                    BgColor = new(255, 0, 0, 192);
-                                    break;
-                                case 'R':
-                                    BgColor = new(255, 0, 0);
-                                    break;
-                                case 'c':
-                                    BgColor = new(0, 255, 255, 192);
-                                    break;
-                                case 'C':
-                                    BgColor = new(0, 255, 255);
-                                    break;
-                                case 'o':
-                                    BgColor = new(255, 160, 0, 192);
-                                    break;
-                                case 'O':
-                                    BgColor = new(255, 160, 0);
-                                    break;
-                                case 'p':
-                                    BgColor = new(160, 0, 255, 192);
-                                    break;
-                                case 'P':
-                                    BgColor = new(160, 0, 255);
-                                    break;
-                                default:
-                                    --i;
-                                    break;
+                                case 'd': BgColor = new(0, 0, 0, 192); break;
+                                case 'D': BgColor = new(0, 0, 0); break;
+                                case 'w': BgColor = new(255, 255, 255, 192); break;
+                                case 'W': BgColor = new(255, 255, 255); break;
+                                case 'b': BgColor = new(0, 0, 255, 192); break;
+                                case 'B': BgColor = new(0, 0, 255); break;
+                                case 'y': BgColor = new(255, 255, 0, 192); break;
+                                case 'Y': BgColor = new(255, 255, 0); break;
+                                case 'g': BgColor = new(0, 255, 0, 192); break;
+                                case 'G': BgColor = new(0, 255, 0); break;
+                                case 'r': BgColor = new(255, 0, 0, 192); break;
+                                case 'R': BgColor = new(255, 0, 0); break;
+                                case 'c': BgColor = new(0, 255, 255, 192); break;
+                                case 'C': BgColor = new(0, 255, 255); break;
+                                case 'o': BgColor = new(255, 160, 0, 192); break;
+                                case 'O': BgColor = new(255, 160, 0); break;
+                                case 'p': BgColor = new(160, 0, 255, 192); break;
+                                case 'P': BgColor = new(160, 0, 255); break;
+                                default: --i; break;
                             }
                             Bg = true;
                             continue;
-                        default:
-                            i--;
-                            continue;
+                        default: i--; continue;
                     }
                     continue;
                 }
